@@ -1,6 +1,7 @@
 package pl.bialek.employeerest.api.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.bialek.employeerest.api.dto.EmployeeDTO;
 import pl.bialek.employeerest.api.dto.EmployeesDTO;
@@ -32,14 +33,14 @@ public class EmployeeController {
                 .map(employeeMapper::mapstructMapper)
                 .toList());
     }
-
-    @GetMapping(EMPLOYEE_ID) //localhost:8190/RestApp/emplyees/{employeeId}
+    @GetMapping(value = EMPLOYEE_ID, produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE }) //localhost:8190/RestApp/emplyees/{employeeId}
     public EmployeeDTO employeeDetails(@PathVariable Integer employeeId){
         return employeeRepository.findById(employeeId)
                 .map(employeeMapper::mapstructMapper)
                 .orElseThrow(()-> new EmployeeNotFoundException(employeeId));
     }
-
 }
 
 
