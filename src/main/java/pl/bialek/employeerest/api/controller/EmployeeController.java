@@ -1,5 +1,6 @@
 package pl.bialek.employeerest.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,36 @@ public class EmployeeController {
         //Setting endpoint status and created resource location
     }
 
+    @PutMapping(EMPLOYEE_ID)
+    @Transactional
+    public ResponseEntity<?> updateEmployee(
+            @PathVariable Integer employeeId,
+            @Valid @RequestBody EmployeeDTO employeeDTO
+    ) {
+        EmployeeEntity existingEmployee = employeeRepository.findById(employeeId).orElseThrow(
+                () -> new EmployeeNotFoundException(employeeId));
+        existingEmployee.setName(employeeDTO.getName());
+        existingEmployee.setSurname(employeeDTO.getSurname());
+        existingEmployee.setEmail(employeeDTO.getEmail());
+        existingEmployee.setSalary(employeeDTO.getSalary());
+        existingEmployee.setPhone(employeeDTO.getPhone());
+        EmployeeEntity savedEmployee = employeeRepository.save(existingEmployee);
+        return ResponseEntity.ok().build();
+    }
+
+
+//           return employeeRepository.findById(employeeId)
+//                .map(employeeEntity -> {
+//                    employeeEntity.setName(employeeDTO.getName());
+//                    employeeEntity.setSurname(employeeDTO.getSurname());
+//                    employeeEntity.setSalary(employeeDTO.getSalary());
+//                    employeeEntity.setPhone(employeeDTO.getPhone());
+//                    employeeEntity.setEmail(employeeDTO.getEmail());
+//                    employeeRepository.save(employeeEntity);
+//                    return ResponseEntity.noContent().build();
+//                })
+//                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+//    }
 }
 
 
