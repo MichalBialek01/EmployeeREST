@@ -1,4 +1,4 @@
-package pl.bialek.employeerest.api.DTO;
+package pl.bialek.employeerest.api.dto;
 
 import lombok.*;
 import java.util.List;

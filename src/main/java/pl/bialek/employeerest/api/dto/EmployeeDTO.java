@@ -1,6 +1,5 @@
-package pl.bialek.employeerest.api.DTO;
+package pl.bialek.employeerest.api.dto;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -9,7 +8,7 @@ import java.math.BigDecimal;
 @With
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
 public class EmployeeDTO {
     private Integer employeeId;
     private String name;
