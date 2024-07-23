@@ -14,6 +14,7 @@ import pl.bialek.employeerest.infrastructure.database.repository.EmployeeReposit
 import pl.bialek.employeerest.infrastructure.exception.EmployeeNotFoundException;
 
 import java.net.URI;
+import java.util.Optional;
 
 import static pl.bialek.employeerest.api.controller.EmployeeController.EMPLOYEES;
 
@@ -85,19 +86,19 @@ public class EmployeeController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping(EMPLOYEE_ID)
+    public ResponseEntity<?> deleteEmployee(
+            @PathVariable Integer employeeId
+    ){
+        var employeeOpt = employeeRepository.findById(employeeId);
+        if(employeeOpt.isPresent()){
+            employeeRepository.deleteById(employeeId);
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-//           return employeeRepository.findById(employeeId)
-//                .map(employeeEntity -> {
-//                    employeeEntity.setName(employeeDTO.getName());
-//                    employeeEntity.setSurname(employeeDTO.getSurname());
-//                    employeeEntity.setSalary(employeeDTO.getSalary());
-//                    employeeEntity.setPhone(employeeDTO.getPhone());
-//                    employeeEntity.setEmail(employeeDTO.getEmail());
-//                    employeeRepository.save(employeeEntity);
-//                    return ResponseEntity.noContent().build();
-//                })
-//                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
-//    }
 }
 
 
