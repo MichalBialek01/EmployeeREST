@@ -36,7 +36,7 @@ public class BootstrapApplicationComponent implements ApplicationListener<Contex
                 .surname("Zajavka")
                 .salary(new BigDecimal("52322.00"))
                 .phone("+48 548 665 441")
-                .email("zajavka@zajavka.com")
+                .email("myMail@myMail.com")
                 .build());
 
         employeeRepository.save(EmployeeEntity.builder()
@@ -48,11 +48,11 @@ public class BootstrapApplicationComponent implements ApplicationListener<Contex
                 .build());
 
         employeeRepository.save(EmployeeEntity.builder()
-                .name("Tomasz")
+                .name("Lomobka")
                 .surname("Hibernate")
                 .salary(new BigDecimal("53231.00"))
                 .phone("+48 745 554 445")
-                .email("zajavka@email.com")
+                .email("email@email.com")
                 .build());
     }
 }
