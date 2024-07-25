@@ -1,7 +1,10 @@
 package pl.bialek.employeerest.api.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +16,7 @@ import pl.bialek.employeerest.infrastructure.database.entity.EmployeeEntity;
 import pl.bialek.employeerest.infrastructure.database.repository.EmployeeRepository;
 import pl.bialek.employeerest.infrastructure.exception.EmployeeNotFoundException;
 
-import java.net.URI;
-import java.util.Optional;
+import java.math.BigDecimal;
 
 import static pl.bialek.employeerest.api.controller.EmployeeController.EMPLOYEES;
 
@@ -24,6 +26,7 @@ import static pl.bialek.employeerest.api.controller.EmployeeController.EMPLOYEES
 public class EmployeeController {
     //Normally we should use service layer, but for this task we can skip it
     public static final String EMPLOYEE_ID = "/{employeeId}";
+    public static final String EMPLOYEE_UPDATE_SALARY = "/{employeeId}/salary";
     public static final String EMPLOYEE_ID_RESULT = "/%s";
     public static final String EMPLOYEES = "/employees";
     private EmployeeRepository employeeRepository;
@@ -63,10 +66,13 @@ public class EmployeeController {
                 .email(employeeDTO.getEmail())
                 .build();
         EmployeeEntity createdEmployee = employeeRepository.save(employeeEntity);
-        return ResponseEntity
-                .created(URI.create(EMPLOYEES + EMPLOYEE_ID_RESULT.
-                        formatted(createdEmployee.getEmployeeId()))).build();
-        //Setting endpoint status and created resource location
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location",
+                EMPLOYEES + EMPLOYEE_ID_RESULT.
+                        formatted(createdEmployee.getEmployeeId()));
+
+      return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
     @PutMapping(EMPLOYEE_ID)
@@ -79,6 +85,7 @@ public class EmployeeController {
                 () -> new EmployeeNotFoundException(employeeId));
         existingEmployee.setName(employeeDTO.getName());
         existingEmployee.setSurname(employeeDTO.getSurname());
+        existingEmployee.setSurname(employeeDTO.getSurname());
         existingEmployee.setEmail(employeeDTO.getEmail());
         existingEmployee.setSalary(employeeDTO.getSalary());
         existingEmployee.setPhone(employeeDTO.getPhone());
@@ -89,15 +96,29 @@ public class EmployeeController {
     @DeleteMapping(EMPLOYEE_ID)
     public ResponseEntity<?> deleteEmployee(
             @PathVariable Integer employeeId
-    ){
-        var employeeOpt = employeeRepository.findById(employeeId);
-        if(employeeOpt.isPresent()){
-            employeeRepository.deleteById(employeeId);
-            return ResponseEntity.ok().build();
-        }else {
-            return ResponseEntity.notFound().build();
-        }
+    ) {
+
+        EmployeeEntity existingEmployee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "EmployeeEntity not found, employeeId: [%s]".formatted(employeeId)
+                ));
+        employeeRepository.deleteById(existingEmployee.getEmployeeId());
+        return ResponseEntity.noContent().build();
+
     }
+
+    @PatchMapping
+    public ResponseEntity<?> updateEmployeeSalary(
+            @PathVariable Integer employeeId,
+            @RequestParam(required = true) BigDecimal newSalary
+    ) {
+        EmployeeEntity employeeEntity = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+        employeeEntity.setSalary(newSalary);
+        employeeRepository.save(employeeEntity);
+    return ResponseEntity.ok().build();
+    }
+
 
 }
 
